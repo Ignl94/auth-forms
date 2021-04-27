@@ -1,21 +1,35 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 
 <h1>New Item</h1>
 
-<form>
-    <fieldset>
-        <legend>Please enter your information:</legend>
+<form action="/new_item" method="POST">
+  <fieldset>
+    <legend>Please enter your information:</legend>
+    {{ grocery_item_form.csrf_token }}
 
-
-
-        <!-- TODO: Remove the next paragraph and use the `form` object passed in 
+    <!-- TODO: Remove the next paragraph and use the `form` object passed in 
             from the route to render a form. -->
-        <p><em>Form fields go here!</em></p>
-
-        <input type="submit" value="Submit">
-    </fieldset>
+    {{ grocery_item_form.name.label }}
+    <!--  -->
+    {{ grocery_item_form.name }}
+    <!--  -->
+    {{ grocery_item_form.price.label }}
+    <!--  -->
+    {{ grocery_item_form.price }}
+    <!--  -->
+    {{ grocery_item_form.category.label }}
+    <!--  -->
+    {{ grocery_item_form.category }}
+    <!--  -->
+    {{ grocery_item_form.photo_url.label }}
+    <!--  -->
+    {{ grocery_item_form.photo_url }}
+    <!--  -->
+    {{ grocery_item_form.store.label }}
+    <!-- -->
+    {{ grocery_item_form.store }}
+    <input type="submit" value="Submit" />
+  </fieldset>
 </form>
-
 
 {% endblock %}
