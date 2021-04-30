@@ -8,7 +8,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = os.urandom(24)
 
+
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 from grocery_app.routes import main, auth
 
 
@@ -18,6 +20,7 @@ app.register_blueprint(auth)  # registered auth blueprint
 
 with app.app_context():
     db.create_all()
+
 
 
 # Authentication
@@ -34,4 +37,4 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
-bcrypt = Bcrypt(app)
+

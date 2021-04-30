@@ -2,7 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, SelectField, SubmitField, FloatField, PasswordField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, URL, ValidationError
-from grocery_app.models import GroceryStore, User
+from grocery_app.models import GroceryStore, User,ItemCategory
+from grocery_app import bcrypt
 
 
 class GroceryStoreForm(FlaskForm):
@@ -33,8 +34,7 @@ class GroceryItemForm(FlaskForm):
                        DataRequired(), Length(min=3, max=50)])
     price = FloatField('Price', validators=[
                        DataRequired()])
-    category = SelectField('Category', choices=[
-                           'produce'], validators=[DataRequired()])
+    category = SelectField('Category', choices=ItemCategory.choices(), validators=[DataRequired()])
     photo_url = StringField('Photo', validators=[URL(require_tld=False)])
     store = QuerySelectField(
         'Store', query_factory=lambda: GroceryStore.query, allow_blank=True)
@@ -59,3 +59,13 @@ class LoginForm(FlaskForm):
                            DataRequired(), Length(min=3, max=50)])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Log In')
+
+    def validate_username(self, username):
+       user = User.query.filter_by(username=self.username.data).first()
+       if not user:
+           raise ValidationError('No such user. Please try again.')
+    
+    def validate_password(self, password):
+       user = User.query.filter_by(username=self.username.data).first()
+       if user and not bcrypt.check_password_hash(user.password, password.data):
+           raise ValidationError('Passwords didn\'t match. Please try again.')

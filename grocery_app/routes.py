@@ -2,7 +2,9 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash
 from datetime import date, datetime
 from grocery_app.models import GroceryStore, GroceryItem, User
 from grocery_app.forms import GroceryStoreForm, GroceryItemForm, SignUpForm, LoginForm
-from flask_login import login_required
+from flask_login import login_required,login_user, logout_user
+from grocery_app import bcrypt
+
 
 
 # Import app and db from events_app package so that we can run app
@@ -24,6 +26,7 @@ def homepage():
 
 
 @main.route('/new_store', methods=['GET', 'POST'])
+@login_required
 def new_store():
     # TODO: Create a GroceryStoreForm
     grocery_store_form = GroceryStoreForm()
@@ -44,6 +47,7 @@ def new_store():
 
 
 @main.route('/new_item', methods=['GET', 'POST'])
+@login_required
 def new_item():
     # TODO: Create a GroceryItemForm
     grocery_item_form = GroceryItemForm()
@@ -52,9 +56,11 @@ def new_item():
     # - create a new GroceryItem object and save it to the database,
     # - flash a success message, and
     # - redirect the user to the item detail page.
+    print('###################### Line before item validation #####################')
     if grocery_item_form.validate_on_submit():
+        print('###################### Line after item validation ##################')
         grocery_item = GroceryItem(name=grocery_item_form.name.data, price=grocery_item_form.price.data,
-                                   category=grocery_item_form.category.data, photo_url=grocery_item_form.photo_url.data, store=grocery_item_form.store.data)
+                                   category=grocery_item_form.category.data, photo_url=grocery_item_form.photo_url.data,store=grocery_item_form.store.data)
         db.session.add(grocery_item)
         db.session.commit()
         print('########## Store Item commited ######')
@@ -66,6 +72,7 @@ def new_item():
 
 
 @main.route('/store/<store_id>', methods=['GET', 'POST'])
+@login_required
 def store_detail(store_id):
     store = GroceryStore.query.get(store_id)
     # TODO: Create a GroceryStoreForm and pass in `obj=store`
@@ -86,6 +93,7 @@ def store_detail(store_id):
 
 
 @main.route('/item/<item_id>', methods=['GET', 'POST'])
+@login_required
 def item_detail(item_id):
     item = GroceryItem.query.get(item_id)
     # TODO: Create a GroceryItemForm and pass in `obj=item`
